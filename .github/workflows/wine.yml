@@ -1,4 +1,4 @@
-name: Build J8u312
+name: Build custom wine
 
 on:
   push:
