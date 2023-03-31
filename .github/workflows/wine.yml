@@ -46,7 +46,7 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v4.0.0
         with:
-          context: ${{ FOLDER }}
+          context: ${{ env.FOLDER }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
