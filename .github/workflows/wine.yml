@@ -1,11 +1,11 @@
-name: Build custom wine
+name: Build Wine Container
 
 on:
-  push:
-    branches:
-      - 'main'
-    paths:
-      - 'wine'
+  # push:
+  #   branches:
+  #     - 'main'
+  #   paths:
+  #     - 'wine/Dockerfile'
   workflow_dispatch:
 
 env:
@@ -49,5 +49,5 @@ jobs:
           context: ${{ env.FOLDER }}
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:wine
           labels: ${{ steps.meta.outputs.labels }}

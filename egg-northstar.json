@@ -1,0 +1,62 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2023-04-01T09:06:41-07:00",
+    "name": "Northstar",
+    "author": "inaccuratetank@outlook.com",
+    "description": "A Titanfall|2 modding and multiplayer server framework.",
+    "features": null,
+    "docker_images": {
+        "ghcr.io\/inaccuratetank\/northstar-pterodactyl:latest": "ghcr.io\/inaccuratetank\/northstar-pterodactyl:latest"
+    },
+    "file_denylist": [],
+    "startup": "nswrap .\/.exec -softwared3d11",
+    "config": {
+        "files": "{\r\n    \"Northstar\/R2Northstar\/mods\/Northstar.CustomServers\/mod\/cfg\/autoexec_ns_server.cfg\": {\r\n        \"parser\": \"file\",\r\n        \"find\": {\r\n            \"ns_server_name\": \"ns_server_name \\\"{{env.NS_SERVER_NAME}}\\\"\",\r\n            \"ns_server_desc\": \"ns_server_desc \\\"{{env.NS_SERVER_DESC}}\\\"\",\r\n            \"ns_server_password\": \"ns_server_password \\\"{{env.NS_SERVER_PASSWORD}}\\\"\"\r\n        }\r\n    }\r\n}",
+        "startup": "{\r\n    \"done\": \"Server has started\"\r\n}",
+        "logs": "{}",
+        "stop": "^C ^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!\/bin\/sh\r\n\r\n## Updating the installer\r\napk update\r\napk upgrade\r\n\r\n## Building the wrapper\r\napk add --update --no-cache alpine-sdk git jq\r\ngit clone https:\/\/github.com\/pg9182\/northstar-dedicated.git \/nsbuild\r\ncd \/nsbuild\/src\/nswrap\r\ngcc -Wall -Wextra -Werror -Wno-trampolines -std=gnu11 -O3 -DNSWRAP_HASH=\"$(sha256sum nswrap.c | head -c64)\" \"nswrap.c\" -o \"\/mnt\/server\/nswrap\"\r\nchmod +x \/mnt\/server\/nswrap\r\n\r\n## Installing Northstar\r\nVERSION=$(curl -sL https:\/\/api.github.com\/repos\/R2Northstar\/Northstar\/releases\/latest | jq -r \".tag_name\") && \\\r\ncurl -Lo \/tmp\/northstar.zip https:\/\/github.com\/R2Northstar\/Northstar\/releases\/download\/$VERSION\/Northstar.release.$VERSION.zip && \\\r\nunzip -o \/tmp\/northstar.zip -d \/mnt\/server\/Northstar\r\n\r\n## Setup config and link for accessibility\r\necho \"+setplaylist private_match\" > \/mnt\/server\/Northstar\/ns_startup_args_dedi.txt\r\nln \/mnt\/server\/Northstar\/ns_startup_args_dedi.txt \/mnt\/server\r\nln \/mnt\/server\/Northstar\/R2Northstar\/mods\/Northstar.CustomServers\/mod\/cfg\/autoexec_ns_server.cfg \/mnt\/server\r\n\r\n## Removing old .wine folder\r\nrm -r \/mnt\/server\/.wine",
+            "container": "ghcr.io\/parkervcp\/installers:alpine",
+            "entrypoint": "\/bin\/sh"
+        }
+    },
+    "variables": [
+        {
+            "name": "Server Name",
+            "description": "The server name to show in the server browser.",
+            "env_variable": "NS_SERVER_NAME",
+            "default_value": "Unnamed Northstar Server",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:250",
+            "field_type": "text"
+        },
+        {
+            "name": "Server Description",
+            "description": "The server description to show in the server browser.",
+            "env_variable": "NS_SERVER_DESC",
+            "default_value": "Default server description",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "string",
+            "field_type": "text"
+        },
+        {
+            "name": "Server Password",
+            "description": "The password for the server. If empty, the server is public.",
+            "env_variable": "NS_SERVER_PASSWORD",
+            "default_value": "VeryGoodPassword",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "string",
+            "field_type": "text"
+        }
+    ]
+}
