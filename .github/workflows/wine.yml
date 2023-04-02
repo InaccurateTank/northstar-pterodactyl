@@ -1,11 +1,11 @@
 name: Build Wine Container
 
 on:
-  # push:
-  #   branches:
-  #     - 'main'
-  #   paths:
-  #     - 'wine/Dockerfile'
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'container/*'
   workflow_dispatch:
 
 env:
@@ -26,9 +26,6 @@ jobs:
 
       - name: Buildx
         uses: docker/setup-buildx-action@v2.5.0
-        with:
-          version: 'v0.8.2'
-          buildkitd-flags: --debug
 
       - name: Login
         uses: docker/login-action@v2.1.0
@@ -49,5 +46,5 @@ jobs:
           context: ${{ env.FOLDER }}
           platforms: linux/amd64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:wine
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
