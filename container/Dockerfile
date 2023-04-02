@@ -21,13 +21,11 @@ RUN         mkdir -p /nsbuild/src/ /nsbuild/packages/main && \
             cd /nsbuild/src/main/wine && abuild -r
 
 FROM base
-COPY        --from=build /nsbuild/src/main/nswrap/nswrap-wineprefix /usr/local/bin/nswrap-wineprefix
+COPY        --chmod=0755 --from=build /nsbuild/src/main/nswrap/nswrap-wineprefix /usr/local/bin/nswrap-wineprefix
 
 RUN         apk add --no-cache gnutls tzdata ca-certificates
 RUN         --mount=from=build,source=/nsbuild/packages/main/x86_64,target=/nsbuild/wine \
             apk add --no-cache --allow-untrusted /nsbuild/wine/northstar-dedicated-wine-[0-9]*-r*.apk xvfb
-RUN         chmod +x /usr/local/bin/nswrap-wineprefix && \
-            rm -r /nsbuild
 
 # silence Xvfb xkbcomp warnings by working around the bug (present in libX11 1.7.2) fixed in libX11 1.8 by https://gitlab.freedesktop.org/xorg/lib/libx11/-/merge_requests/79
 RUN         echo 'partial xkb_symbols "evdev" {};' > /usr/share/X11/xkb/symbols/inet
