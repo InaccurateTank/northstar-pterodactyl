@@ -1,5 +1,11 @@
 #!/bin/sh
 
+## First check if the /mnt/titanfall folder is empty. If it is, the server very much won't start
+if [ -z "$(ls -A /mnt/titanfall)" ]; then
+    echo "The server requires titanfall source files to be provided as a mount on /mnt/titanfall."
+    exit 1
+fi
+
 ## Set environment variable that holds the Internal Docker IP
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
 export INTERNAL_IP
@@ -34,7 +40,7 @@ if [ -d ".exec" ]; then
     rm .exec -r
 fi
 mkdir .exec
-cp -dlr /mnt/titanfall/* .exec
+cp -dsr /mnt/titanfall/* .exec
 cp -dlr /home/container/Northstar/* .exec
 
 ## Switch to container directory
